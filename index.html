@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Letter Just For You</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"DM Serif Display"', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            text: '#4a3242',       
+                            highlight: '#d51a67',  
+                            subtext: '#8a717e',    
+                        }
+                    },
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Environment */
+        body {
+            background: linear-gradient(180deg, #fff0f5 0%, #fee5ec 40%, #fde4ec 70%, #fce7f3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism Canvas */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 
+                0 25px 50px -12px rgba(220, 150, 170, 0.25),
+                0 0 20px rgba(255, 255, 255, 0.4) inset;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .glass-panel-solid {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 40px rgba(220, 150, 170, 0.3);
+        }
+
+        /* Hide Horizontal Scrollbars for Carousel */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Carousel Dot Transitions */
+        .dot { transition: all 0.3s ease; }
+        .dot.active { opacity: 1; transform: scale(1.3); background-color: #d51a67; }
+
+        /* Performance Optimized Particle Animation (GPU Accelerated) */
+        @keyframes floatParticle {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: var(--max-opacity, 0.8); }
+            90% { opacity: var(--max-opacity, 0.8); }
+            100% { transform: translateY(-15vh) translateX(var(--drift, 30px)) rotate(var(--rot, 45deg)); opacity: 0; }
+        }
+        
+        .particle-item { 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 5;
+            bottom: 0;
+            will-change: transform;
+        }
+
+        /* Cherry Blossom Sway */
+        @keyframes swayTop {
+            0%, 100% { transform: translate(-5px, -5px) rotate(0deg); }
+            50% { transform: translate(0px, -8px) rotate(2deg); }
+        }
+        @keyframes swayBottom {
+            0%, 100% { transform: translate(5px, 5px) rotate(0deg); }
+            50% { transform: translate(8px, 0px) rotate(-2deg); }
+        }
+        .branch-top { transform-origin: top left; animation: swayTop 8s ease-in-out infinite; }
+        .branch-bottom { transform-origin: bottom right; animation: swayBottom 9s ease-in-out infinite; }
+
+        /* Vinyl Grooves */
+        .vinyl-grooves { background: repeating-radial-gradient( #111 0px, #1a1a1a 2px, #111 4px ); }
+
+        /* Error Shake Animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        .shake { animation: shake 0.4s ease-in-out; color: #ef4444; }
+    </style>
+</head>
+<body class="relative font-serif flex flex-col items-center text-brand-text">
+
+    <!-- ============================================================== -->
+    <!-- 💌 CONFIGURATION BLOCK: EDIT YOUR CONTENT HERE 💌              -->
+    <!-- ============================================================== -->
+    <script>
+        const CONFIG = {
+            // Passcode (The 4 letters that complete "i love _ _ _ _")
+            passcode: "deep", 
+            
+            // Vinyl Player Settings
+            songName: "dTmf",
+            artistName: "Lil Baby Grand",
+            musicUrl: "song.mp3", 
+            albumArt: "cover.webp", 
+
+            // Letter Content
+            greeting: "My dearest Arya,",
+            paragraphs: [
+                "In a world full of fleeting moments, you are the feeling I want to keep. You make ordinary days feel softer, warmer, and somehow more alive.",
+                "Loving you feels like finding home in a person — quiet, certain, and endlessly beautiful.",
+                "I don't think you realize how much better my life has become just because you're in it. It's mostly the little things. The random messages, the stupid jokes that somehow become our jokes, and how you're always the first person I want to tell when anything happens.",
+                "And if I had to do all of this again, every late night, every argument, every conversation, every dumb memory, I'd still choose you. Every time."
+            ],
+            signOffText: "Always yours,",
+            signOffName: "A.",
+            
+            // Image files exactly as named in your repository
+            photos: [
+                "image (1).webp",
+                "image (2).webp",
+                "image (3).webp",
+                "image (4).webp",
+                "image (5).webp",
+                "image (6).webp",
+                "image (7).webp",
+                "image (8).webp",
+                "image (9).webp",
+                "image (10).webp",
+                "image (11).webp",
+                "image (12).webp",
+                "image (13).webp",
+                "image (14).webp"
+            ]
+        };
+    </script>
+    <!-- ============================================================== -->
+
+
+    <!-- ============================================================== -->
+    <!-- LAYER 1 & 2: ANIMATED BACKGROUND (GPU Optimized)               -->
+    <!-- ============================================================== -->
+    <div id="particles-container" class="fixed inset-0 pointer-events-none overflow-hidden z-10"></div>
+    
+    <!-- Top-Left Sakura Branch -->
+    <div class="fixed top-0 left-0 pointer-events-none z-20 branch-top w-64 md:w-80 opacity-95">
+        <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-20 -20 C60 30 110 110 160 170 C175 188 200 200 220 205" stroke="#5c3a31" stroke-width="7" stroke-linecap="round"/>
+            <path d="M70 45 C115 50 150 75 190 90" stroke="#5c3a31" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M120 120 C155 125 180 145 200 155" stroke="#5c3a31" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M110 42 C125 35 140 40 145 50 C140 60 125 55 110 42 Z" fill="#9db08c" opacity="0.9"/>
+            <path d="M165 80 C180 75 195 82 198 92 C190 100 175 95 165 80 Z" fill="#9db08c" opacity="0.9"/>
+            <g transform="translate(90, 48)">
+                <circle cx="-10" cy="-6" r="10" fill="#fbcfe8"/><circle cx="0" cy="-13" r="10" fill="#f9a8d4"/><circle cx="10" cy="-6" r="10" fill="#fbcfe8"/><circle cx="6" cy="8" r="10" fill="#f9a8d4"/><circle cx="-6" cy="8" r="10" fill="#fbcfe8"/><circle cx="0" cy="0" r="4" fill="#d51a67"/>
+            </g>
+            <g transform="translate(160, 92)">
+                <circle cx="-13" cy="-7" r="12" fill="#fbcfe8"/><circle cx="0" cy="-15" r="12" fill="#f9a8d4"/><circle cx="13" cy="-7" r="12" fill="#fbcfe8"/><circle cx="9" cy="11" r="12" fill="#f9a8d4"/><circle cx="-9" cy="11" r="12" fill="#fbcfe8"/><circle cx="0" cy="0" r="5" fill="#d51a67"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Bottom-Right Sakura Branch -->
+    <div class="fixed bottom-0 right-0 pointer-events-none z-20 branch-bottom w-72 md:w-96 opacity-95">
+        <svg viewBox="0 0 350 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M370 230 C280 210 200 170 120 185 C70 195 20 230 -10 240" stroke="#5c3a31" stroke-width="7" stroke-linecap="round"/>
+            <path d="M220 180 C180 140 130 130 90 125" stroke="#5c3a31" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M140 140 C125 135 115 145 110 155 C120 160 135 152 140 140 Z" fill="#9db08c" opacity="0.9"/>
+            <path d="M80 130 C65 125 55 135 50 145 C60 150 75 142 80 130 Z" fill="#9db08c" opacity="0.9"/>
+            <g transform="translate(100, 130)">
+                <circle cx="-11" cy="-6" r="11" fill="#fbcfe8"/><circle cx="0" cy="-14" r="11" fill="#f9a8d4"/><circle cx="11" cy="-6" r="11" fill="#fbcfe8"/><circle cx="8" cy="10" r="11" fill="#f9a8d4"/><circle cx="-8" cy="10" r="11" fill="#fbcfe8"/><circle cx="0" cy="0" r="5" fill="#d51a67"/>
+            </g>
+            <g transform="translate(180, 175)">
+                <circle cx="-12" cy="-7" r="12" fill="#fbcfe8"/><circle cx="0" cy="-15" r="12" fill="#f9a8d4"/><circle cx="12" cy="-7" r="12" fill="#fbcfe8"/><circle cx="8" cy="11" r="12" fill="#f9a8d4"/><circle cx="-8" cy="11" r="12" fill="#fbcfe8"/><circle cx="0" cy="0" r="5" fill="#d51a67"/>
+            </g>
+        </svg>
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- PASSWORD LOCK SCREEN OVERLAY                                   -->
+    <!-- ============================================================== -->
+    <div id="pin-screen" class="fixed inset-0 z-50 flex items-center justify-center p-6 transition-all duration-1000 ease-in-out bg-transparent">
+        
+        <div class="glass-panel-solid relative w-full max-w-sm rounded-[2rem] px-8 py-10 flex flex-col items-center">
+            
+            <!-- Icon -->
+            <div class="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d51a67" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h2 class="text-[2rem] text-brand-highlight mb-8 font-bold text-center leading-tight">A letter for you</h2>
+
+            <!-- The "i love _ _ _ _" Interactive Input Box -->
+            <div class="relative flex items-center justify-center text-brand-text mb-8 w-full cursor-text py-2" onclick="document.getElementById('passcode-input').focus()">
+                <span class="mr-2.5 text-2xl tracking-wide italic">i love</span>
+                <div class="flex gap-1.5 mt-1" id="slot-container">
+                    <span class="slot w-[1.35rem] text-center border-b-[2.5px] border-gray-300 h-8 leading-8 text-2xl font-semibold transition-colors"></span>
+                    <span class="slot w-[1.35rem] text-center border-b-[2.5px] border-gray-300 h-8 leading-8 text-2xl font-semibold transition-colors"></span>
+                    <span class="slot w-[1.35rem] text-center border-b-[2.5px] border-gray-300 h-8 leading-8 text-2xl font-semibold transition-colors"></span>
+                    <span class="slot w-[1.35rem] text-center border-b-[2.5px] border-gray-300 h-8 leading-8 text-2xl font-semibold transition-colors"></span>
+                </div>
+                <!-- Invisible Input (Font size 16px prevents iOS zoom) -->
+                <input type="text" id="passcode-input" maxlength="4" class="absolute inset-0 opacity-0 w-full h-full cursor-text z-10" style="font-size: 16px;" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none">
+            </div>
+            
+            <!-- Unlock Button -->
+            <button id="unlock-btn" class="w-full bg-brand-highlight hover:bg-pink-700 text-white font-serif tracking-wider text-[1.15rem] py-3.5 rounded-full shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                🔒 Unlock
+            </button>
+        </div>
+        
+        <!-- Preloaded Audio Element -->
+        <audio id="bg-audio" loop preload="auto"></audio>
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- MAIN CONTENT (Revealed after Unlock)                           -->
+    <!-- ============================================================== -->
+    <main id="main-content" class="relative z-30 w-full max-w-lg mx-auto px-5 py-12 flex flex-col items-center opacity-0 pointer-events-none transition-all duration-[1500ms] ease-out h-[100dvh] overflow-y-auto overflow-x-hidden transform translate-y-8">
+        
+        <!-- THE LETTER CANVAS -->
+        <article class="glass-panel w-full rounded-[2rem] px-6 md:px-10 py-12 flex flex-col items-center text-center relative mt-6">
+            
+            <!-- Vinyl Music Player -->
+            <div id="vinyl-player" class="flex flex-col items-center mb-10 w-full -mt-2 transition-opacity duration-1000 ease-in opacity-0">
+                <div class="relative w-44 h-44 rounded-full bg-black shadow-2xl flex items-center justify-center animate-spin-slow vinyl-grooves border-4 border-gray-900">
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
+                    <div class="relative w-16 h-16 rounded-full overflow-hidden border border-gray-600 bg-gray-800 flex items-center justify-center shadow-inner">
+                        <img id="ui-album-art" src="" alt="Cover" class="w-full h-full object-cover hidden" onload="this.classList.remove('hidden')">
+                        <div class="absolute w-3 h-3 bg-gray-900 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.5)] z-10"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-5">
+                    <h3 id="ui-song-name" class="font-serif text-[1.35rem] font-bold tracking-wide text-brand-text"></h3>
+                    <p id="ui-artist-name" class="font-sans text-sm text-brand-subtext tracking-wider"></p>
+                </div>
+            </div>
+
+            <!-- Text Content -->
+            <h1 id="ui-greeting" class="text-3xl md:text-4xl font-bold leading-tight text-brand-highlight mb-6"></h1>
+            
+            <div id="ui-paragraphs" class="flex flex-col gap-6 text-[1.25rem] leading-[1.8] text-brand-text/90">
+                <!-- Javascript populates this -->
+            </div>
+            
+            <div class="mt-10">
+                <p id="ui-signoff-text" class="text-xl text-brand-highlight font-semibold"></p>
+                <p id="ui-signoff-name" class="text-3xl italic mt-2 text-brand-text"></p>
+            </div>
+
+        </article>
+
+        <!-- PHOTO CAROUSEL -->
+        <section class="mt-12 w-full flex flex-col items-center pb-12 z-30 relative">
+            <div id="ui-carousel" class="w-full h-[50vh] flex overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth">
+                <!-- Javascript populates images here -->
+            </div>
+            <div id="carousel-dots-container" class="flex justify-center items-center gap-2 mt-5">
+                <!-- JS populates dots -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================== -->
+    <!-- LOGIC SCRIPT                                                   -->
+    <!-- ============================================================== -->
+    <script>
+        // 1. Password & Visual Mirroring Logic
+        const passInput = document.getElementById('passcode-input');
+        const slots = document.querySelectorAll('.slot');
+        const slotContainer = document.getElementById('slot-container');
+        const unlockBtn = document.getElementById('unlock-btn');
+        const TARGET_PASS = CONFIG.passcode.toLowerCase().trim();
+
+        passInput.addEventListener('input', () => {
+            const val = passInput.value.toLowerCase();
+            slots.forEach((slot, index) => {
+                slot.textContent = val[index] || '';
+                if (val[index]) {
+                    slot.classList.replace('border-gray-300', 'border-brand-highlight');
+                    slot.classList.add('text-brand-highlight');
+                } else {
+                    slot.classList.replace('border-brand-highlight', 'border-gray-300');
+                    slot.classList.remove('text-brand-highlight');
+                }
+            });
+            // Clear shake error if user starts typing again
+            slotContainer.classList.remove('shake');
+        });
+
+        function unlockPage() {
+            passInput.blur(); 
+            
+            // Audio Fade-in Engine (iOS Compatible)
+            const audio = document.getElementById('bg-audio');
+            if (CONFIG.musicUrl) {
+                audio.src = CONFIG.musicUrl;
+                audio.volume = 0; // Start at 0
+                audio.play().then(() => {
+                    let currentVol = 0;
+                    const fadeInterval = setInterval(() => {
+                        if (currentVol < 0.6) {
+                            currentVol += 0.05;
+                            audio.volume = Math.min(currentVol, 0.6);
+                        } else {
+                            clearInterval(fadeInterval);
+                        }
+                    }, 200); // Ramps up over ~2.4 seconds
+                }).catch(e => console.log("Audio play prevented:", e));
+            }
+
+            // Visual Reveal
+            document.getElementById('pin-screen').style.opacity = '0';
+            document.getElementById('pin-screen').style.pointerEvents = 'none';
+            
+            const main = document.getElementById('main-content');
+            main.style.opacity = '1';
+            main.style.pointerEvents = 'auto';
+            main.classList.remove('translate-y-8');
+            main.classList.add('translate-y-0');
+
+            setTimeout(() => {
+                document.getElementById('vinyl-player').classList.remove('opacity-0');
+            }, 800);
+            
+            setTimeout(() => document.getElementById('pin-screen').remove(), 1000);
+        }
+
+        // Validate and Shake
+        unlockBtn.addEventListener('click', () => {
+            if (passInput.value.toLowerCase().trim() === TARGET_PASS) {
+                unlockPage();
+            } else {
+                slotContainer.classList.remove('shake');
+                void slotContainer.offsetWidth; // Trigger reflow
+                slotContainer.classList.add('shake');
+                setTimeout(() => { passInput.value = ''; passInput.dispatchEvent(new Event('input')); }, 400);
+            }
+        });
+
+        // 2. Populate Content
+        document.getElementById('ui-song-name').textContent = CONFIG.songName;
+        document.getElementById('ui-artist-name').textContent = CONFIG.artistName;
+        document.getElementById('ui-album-art').src = CONFIG.albumArt;
+
+        document.getElementById('ui-greeting').textContent = CONFIG.greeting;
+        const paraContainer = document.getElementById('ui-paragraphs');
+        CONFIG.paragraphs.forEach(text => {
+            const p = document.createElement('p');
+            p.textContent = text;
+            paraContainer.appendChild(p);
+        });
+        document.getElementById('ui-signoff-text').textContent = CONFIG.signOffText;
+        document.getElementById('ui-signoff-name').textContent = CONFIG.signOffName;
+
+        // 3. Carousel Logic
+        const carousel = document.getElementById('ui-carousel');
+        const dotsContainer = document.getElementById('carousel-dots-container');
+
+        CONFIG.photos.forEach((rawUrl, index) => {
+            const safeUrl = encodeURI(rawUrl);
+            const item = document.createElement('div');
+            item.className = "shrink-0 w-full h-full snap-center flex items-center justify-center px-1";
+            const lazyAttr = index === 0 ? '' : 'loading="lazy"';
+            
+            // Uses object-contain to support both 1:1 and 9:16 natively without cropping
+            item.innerHTML = `<img src="${safeUrl}" alt="Memory" ${lazyAttr} class="w-full h-full object-contain rounded-2xl drop-shadow-md">`;
+            carousel.appendChild(item);
+
+            const dot = document.createElement('div');
+            dot.className = `dot w-2 h-2 rounded-full bg-brand-subtext/30 ${index === 0 ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = dotsContainer.children;
+        carousel.addEventListener('scroll', () => {
+            const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+            for(let i = 0; i < dots.length; i++) {
+                if(i === index) {
+                    dots[i].classList.add('active');
+                    dots[i].classList.remove('bg-brand-subtext/30');
+                } else {
+                    dots[i].classList.remove('active');
+                    dots[i].classList.add('bg-brand-subtext/30');
+                }
+            }
+        });
+
+        // 4. One-Time CSS Particle Setup (GPU Performance)
+        const pContainer = document.getElementById('particles-container');
+        const svgHeart = (c) => `<svg viewBox="0 0 24 24" fill="${c}" class="w-full h-full drop-shadow-sm"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+        const svgPetal = () => `<svg viewBox="0 0 30 30" fill="#fbcfe8" class="w-full h-full drop-shadow-sm"><path d="M15 0 C25 8 28 20 15 30 C2 20 5 8 15 0 Z"/></svg>`;
+
+        for (let i = 0; i < 25; i++) {
+            const el = document.createElement('div');
+            el.className = 'particle-item';
+            
+            const rand = Math.random();
+            if (rand < 0.5) el.innerHTML = svgHeart('rgba(255,255,255,0.6)');
+            else if (rand < 0.8) el.innerHTML = svgHeart('rgba(252,165,165,0.4)');
+            else el.innerHTML = svgPetal();
+
+            const size = Math.random() * 15 + 10;
+            const duration = Math.random() * 15 + 12;
+            const delay = Math.random() * -30;
+            const drift = (Math.random() * 100 - 50) + 'px';
+            const rot = (Math.random() * 360) + 'deg';
+
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = (Math.random() * 100) + 'vw';
+            el.style.animation = `floatParticle ${duration}s linear infinite`;
+            el.style.animationDelay = `${delay}s`;
+            
+            el.style.setProperty('--drift', drift);
+            el.style.setProperty('--rot', rot);
+            el.style.setProperty('--max-opacity', Math.random() * 0.4 + 0.2);
+            
+            pContainer.appendChild(el);
+        }
+    </script>
+</body>
+</html>
