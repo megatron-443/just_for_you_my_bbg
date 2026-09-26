@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>A Letter Just For You</title>
+    
+    <!-- Preload critical cover and first image -->
+    <link rel="preload" as="image" href="cover.webp">
+    <link rel="preload" as="image" href="image%20(1).webp">
+    
+    <!-- Google Fonts: DM Serif Display & Caveat for Polaroid notes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS with custom configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        serif: ['"DM Serif Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        hand: ['"Caveat"', 'cursive']
+                    },
+                    colors: {
+                        brand: { 
+                            text: '#4a3242', 
+                            highlight: '#d51a67', 
+                            subtext: '#8a717e',
+                            rose: '#f472b6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            /* Warm blush-to-rose romantic gradient */
+            background: linear-gradient(180deg, #ffdbe6 0%, #ffccd8 30%, #fec5d8 60%, #fbcfe8 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body.locked { 
+            overflow: hidden; 
+            height: 100dvh; 
+            touch-action: none;
+        }
+
+        /* Hide Scrollbars cleanly across Android & iOS */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* THE AUTHENTIC GLASSMORPHISM RECIPE (Sheer & Refractive) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(24px) saturate(190%);
+            -webkit-backdrop-filter: blur(24px) saturate(190%);
+            box-shadow: inset 0 1.5px 1.5px rgba(255, 255, 255, 0.85), 
+                        inset 1px 0 1px rgba(255, 255, 255, 0.35),
+                        0 24px 48px rgba(213, 26, 103, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+        
+        .glass-panel-solid { 
+            background: rgba(255, 255, 255, 0.94); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 24px 60px rgba(220, 150, 170, 0.32); 
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: var(--max-opacity); }
+            90% { opacity: var(--max-opacity); }
+            100% { transform: translateY(-15vh) rotate(var(--rot)); opacity: 0; }
+        }
+        @keyframes tumbleDown {
+            0% { transform: translateY(-10vh) rotate3d(1, 1, 0, 0deg); opacity: 0; }
+            10% { opacity: var(--max-opacity); }
+            90% { opacity: var(--max-opacity); }
+            100% { transform: translateY(110vh) rotate3d(1, 1.5, 0.5, 720deg); opacity: 0; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.38; transform: scale(1.12); }
+        }
+        .particle-item { position: fixed; pointer-events: none; will-change: transform; z-index: 1; }
+        .bokeh-item { position: fixed; pointer-events: none; z-index: 0; }
+
+        /* Sakura Branches (Fixed Layer 10: Behind text canvas Layer 30) */
+        @keyframes swayTop {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(-1.5deg); }
+        }
+        @keyframes swayBottom {
+            0%, 100% { transform: scaleX(-1) rotate(-16deg); }
+            50% { transform: scaleX(-1) rotate(-11deg); }
+        }
+        .branch-top { transform-origin: top left; animation: swayTop 9s ease-in-out infinite; }
+        .branch-bottom { transform-origin: bottom right; animation: swayBottom 10s ease-in-out infinite; }
+
+        /* Scroll Reveal Pacing */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-item.visible { opacity: 1; transform: translateY(0); }
+
+        .vinyl-grooves { background: repeating-radial-gradient( #111 0px, #1a1a1a 2px, #111 4px ); }
+        .vinyl-paused { animation-play-state: paused !important; }
+        .animate-spin-slow { animation: spin 8s linear infinite; }
+
+        /* MULTI-TIER BIRTHDAY CAKE & FLAMES */
+        .candle-body {
+            width: 5px;
+            height: 22px;
+            background: linear-gradient(to right, #ffd1dc, #f472b6, #db2777);
+            border-radius: 3px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        .candle-wick {
+            width: 1.5px;
+            height: 4px;
+            background: #4b5563;
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .flame {
+            width: 10px;
+            height: 15px;
+            background: radial-gradient(ellipse at bottom, #ffffff 10%, #fef08a 35%, #f97316 75%, transparent 100%);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            transform-origin: bottom center;
+            filter: drop-shadow(0 0 4px #fb923c);
+            animation: flicker 0.12s infinite alternate ease-in-out;
+            transition: all 0.35s ease-out;
+        }
+        .flame.extinguished {
+            opacity: 0;
+            transform: translateX(-50%) scale(0.1) translateY(-6px);
+            animation: none;
+            filter: none;
+        }
+        
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(0.92) rotate(-3deg); }
+            100% { transform: translateX(-50%) scale(1.08) rotate(3deg); }
+        }
+
+        .polaroid-card {
+            background: #ffffff;
+            box-shadow: 0 16px 36px -8px rgba(90, 40, 65, 0.18), 0 4px 12px rgba(0,0,0,0.06);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+        }
+        .polaroid-card:hover {
+            transform: translateY(-4px) rotate(0deg) !important;
+            box-shadow: 0 22px 42px -6px rgba(90, 40, 65, 0.24);
+        }
+        .dot { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+        .dot.active { opacity: 1; transform: scale(1.35); background-color: #d51a67; width: 1.25rem; }
+    </style>
+</head>
+<body class="relative font-serif text-brand-text locked">
+
+    <!-- ============================================================== -->
+    <!-- CONFIGURATION BLOCK (Easily editable directly in GitHub)       -->
+    <!-- ============================================================== -->
+    <script>
+        const CONFIG = {
+            songName: "dTmf",
+            artistName: "Lil Baby Grand",
+            albumArt: "cover.webp", 
+            musicUrl: "song.mp3",
+
+            greeting: "My dearest Arya,",
+            paragraphs: [
+                "Today, 26th of September 2026 marks 19 years of your life on this planet",
+                "Happiest of the happiest birthday to you my baby and I hope you have a great day today and all the upcoming days of your life 🥹❤️",
+                "My love, I want you to know that every bit of happiness, joy and pleasure you get in your life it all belongs to you because you deserve it. You deserve all of it. I know that because I have been the longest AND closest with you and no one knows you better than me, so trust me when I say that you’re someone who deserves every ounce of happiness they get.",
+                "The point is, I want you to see the kind of person you are. That is, a loving daughter who is willing to spend any amount to give her parents the life they deserve, the sister who is so protective and caring towards her brother even when he does something bad, the best friend who every person in their life needs, the available & helpful friend, the supportive & pushy & loving & caring wife— I can't put it into words how beautiful of a person you are, it would require me books to describe it, and that is just your personality. Describing your beauty and the way you look would take hundreds of books.",
+                "You are such a charm. Everyone who has you in their life or had you has been blessed by the universe itself. I hope you know that. I'm sooooo lucky and grateful to be one of those people, to have 3 years of these 19 years, and get to love you. You have made me and my life better in so many ways that I can’t even tell how thankful I am to you.",
+                "Please know that I’ll never forget this and the things you have done for me till today, I’ll always remember them and be grateful for them no matter what phase of life I’m in.",
+                "You know, sometimes I feel sad that you don’t receive the same love and treatment from the people who you give so much love and care to, including your friends, like the way you make things for their birthday or the way you give them a special place.",
+                "I want you to know that... ever since we have met, I have always tried to be that friend, that partner and that best friend who you deserve. The person who you are to other people— but secretly want someone to treat you the same way. And as a gift, I will always try to be that person no matter what. Not out of pity, not out of anything but just of how beautiful you are as a person and because you deserve it.",
+                "I love you sm my baby, I love you so much 💋.",
+                "I’ll always love you, and I’m never going to leave you.",
+                "Enjoy and have a great day tomorrow my love ❤️✨"
+            ],
+            signOffText: "Yours loving & caring",
+            signOffName: "— Joy",
+            
+            // 14 Photos with dates / captions for the Polaroids
+            photos: [
+                { src: "image (1).webp", caption: "Sweet moments with you" },
+                { src: "image (2).webp", caption: "My favorite smile" },
+                { src: "image (3).webp", caption: "Forever my charm ✨" },
+                { src: "image (4).webp", caption: "Pure warmth" },
+                { src: "image (5).webp", caption: "Always laughing with you" },
+                { src: "image (6).webp", caption: "Unforgettable memory" },
+                { src: "image (7).webp", caption: "You, effortlessly beautiful" },
+                { src: "image (8).webp", caption: "My favorite view" },
+                { src: "image (9).webp", caption: "Just us two" },
+                { src: "image (10).webp", caption: "A day to remember" },
+                { src: "image (11).webp", caption: "Endless adventures" },
+                { src: "image (12).webp", caption: "In love with this one" },
+                { src: "image (13).webp", caption: "19 and glowing" },
+                { src: "image (14).webp", caption: "Forever & always ❤️" }
+            ]
+        };
+    </script>
+
+    <!-- Ambient Background Particles (Z-0 and Z-1) -->
+    <div id="particles-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- Cherry Blossom Branches (Fixed Z-10: Behind the glass canvas Z-30) -->
+    <div class="fixed top-0 left-0 pointer-events-none z-10 w-60 md:w-80 opacity-90 branch-top">
+        <img src="branch.png" alt="" class="w-full h-auto drop-shadow-lg" onerror="this.style.display='none'">
+    </div>
+    <div class="fixed bottom-0 right-0 pointer-events-none z-10 w-72 md:w-96 opacity-90 branch-bottom">
+        <img src="branch.png" alt="" class="w-full h-auto drop-shadow-lg" onerror="this.style.display='none'">
+    </div>
+    
+    <!-- Top Progress Bar (Love Meter, Z-50) -->
+    <div id="scroll-progress-container" class="fixed top-0 left-0 w-full h-[3px] z-50 opacity-0 transition-opacity duration-1000 pointer-events-none">
+        <div id="scroll-progress" class="h-full bg-gradient-to-r from-[#ffccd8] via-brand-rose to-brand-highlight w-0 relative rounded-r-full">
+            <div class="absolute -right-2.5 -top-[8px] text-[13px] text-brand-highlight drop-shadow-md">♥</div>
+        </div>
+    </div>
+
+    <!-- Mini Floating Vinyl Companion (Z-50) -->
+    <div id="mini-vinyl-btn" class="fixed top-4 right-4 z-50 opacity-0 translate-y-[-20px] transition-all duration-500 pointer-events-none cursor-pointer flex items-center gap-2.5 bg-white/50 backdrop-blur-lg px-3 py-1.5 rounded-full shadow-md border border-white/60">
+        <div class="text-[11px] font-sans text-brand-text font-semibold tracking-wider uppercase opacity-90" id="mini-song-name"></div>
+        <div class="w-7 h-7 rounded-full bg-black shadow-md flex items-center justify-center animate-spin-slow vinyl-grooves vinyl-paused" id="mini-vinyl-disc">
+            <div class="w-2.5 h-2.5 rounded-full overflow-hidden border border-gray-600 bg-gray-800">
+                <img id="mini-album-art" src="" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- LOCK SCREEN INTERACTION (Z-60)                                 -->
+    <!-- ============================================================== -->
+    <div id="pin-screen" class="fixed inset-0 h-[100dvh] z-[60] flex items-center justify-center p-5 transition-all duration-1000 ease-in-out bg-black/10 backdrop-blur-sm">
+        <div class="glass-panel-solid relative w-full max-w-[21.5rem] rounded-[2.2rem] px-6 py-9 flex flex-col items-center">
+            
+            <!-- State 1: Tap to Start Button -->
+            <div id="trigger-state" class="w-full flex flex-col items-center">
+                <div class="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center mb-5 text-brand-highlight border border-pink-100 shadow-sm animate-bounce">
+                    <span class="text-2xl">🎂</span>
+                </div>
+                <h2 class="text-[2.1rem] text-brand-highlight mb-2 font-bold text-center leading-tight">A letter for you</h2>
+                <p class="font-sans text-[0.85rem] text-brand-subtext text-center mb-8">A little secret waiting inside</p>
+                
+                <button id="btn-light-candles" class="w-full bg-gradient-to-r from-pink-500 to-brand-highlight hover:from-pink-600 hover:to-pink-700 active:scale-95 text-white font-sans font-semibold tracking-wide text-[1.05rem] py-4 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 border border-pink-300/40">
+                    Click me cat 🍫
+                </button>
+            </div>
+
+            <!-- State 2: 19-Candle Cake & Blow Detection -->
+            <div id="blow-state" class="w-full flex flex-col items-center hidden opacity-0 transition-opacity duration-500">
+                <h3 class="text-[1.3rem] font-serif font-bold text-brand-highlight mb-1 text-center" id="blow-instruction">Blow the candles to unlock 😼</h3>
+                <p class="font-sans text-[0.75rem] text-brand-subtext mb-5 text-center" id="blow-subtext">(Blow gently into the mic or tap the cake)</p>
+                
+                <!-- Detailed Multi-Tier Cake -->
+                <div id="cake-interactive" class="relative w-full h-36 flex flex-col items-center justify-end mb-6 cursor-pointer group">
+                    
+                    <!-- 19 Candles neatly positioned atop the cake -->
+                    <div id="candles-container" class="flex flex-wrap justify-center gap-[3px] w-[88%] z-20 -mb-[2px] px-1"></div>
+                    
+                    <!-- Top Cake Tier -->
+                    <div class="w-[72%] h-11 bg-gradient-to-b from-[#fff0f5] to-[#fbcfe8] rounded-t-xl border-b-2 border-pink-300 relative z-10 flex flex-col justify-between shadow-sm overflow-hidden">
+                        <!-- Piped Cream Frosting scalloped edge -->
+                        <div class="w-full h-3 bg-white/80 rounded-t-xl flex justify-around items-center px-1">
+                            <span class="w-2 h-2 rounded-full bg-pink-300/60 inline-block"></span>
+                            <span class="w-2 h-2 rounded-full bg-pink-300/60 inline-block"></span>
+                            <span class="w-2 h-2 rounded-full bg-pink-300/60 inline-block"></span>
+                            <span class="w-2 h-2 rounded-full bg-pink-300/60 inline-block"></span>
+                            <span class="w-2 h-2 rounded-full bg-pink-300/60 inline-block"></span>
+                        </div>
+                        <div class="w-full h-1.5 bg-brand-rose/25"></div>
+                    </div>
+                    
+                    <!-- Bottom Cake Tier -->
+                    <div class="w-[90%] h-12 bg-gradient-to-b from-[#fce7f3] to-[#f472b6] rounded-t-lg border-b-4 border-pink-400 relative z-0 flex flex-col justify-between shadow-md">
+                        <div class="w-full h-3 bg-white/70 rounded-t-lg"></div>
+                        <div class="w-full flex justify-center gap-2 mb-1.5 opacity-70">
+                            <span class="text-[9px] text-pink-700">♥</span>
+                            <span class="text-[9px] text-pink-700">♥</span>
+                            <span class="text-[9px] text-pink-700">♥</span>
+                            <span class="text-[9px] text-pink-700">♥</span>
+                        </div>
+                    </div>
+
+                    <!-- Porcelain Cake Stand -->
+                    <div class="w-full h-3 bg-gradient-to-r from-gray-100 via-white to-gray-200 rounded-full shadow-md border border-gray-200"></div>
+                </div>
+
+                <!-- Blowing Progress Bar -->
+                <div class="w-full h-2.5 bg-pink-100/70 rounded-full overflow-hidden shadow-inner border border-pink-200/60 relative">
+                    <div id="blow-progress" class="h-full bg-gradient-to-r from-pink-400 via-rose-500 to-green-500 w-0 transition-all duration-100 ease-out"></div>
+                </div>
+                <div class="w-full flex justify-between items-center text-[10px] font-sans text-brand-subtext mt-1.5 px-0.5">
+                    <span id="candles-blown-count">0 / 19 blown</span>
+                    <span>100% to unlock</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Native Audio Element with immediate preload -->
+        <audio id="bg-audio" loop preload="auto" playsinline></audio>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MAIN LETTER CONTENT (Z-30: Over the branches Z-10)             -->
+    <!-- ============================================================== -->
+    <main id="main-content" class="relative z-30 w-full max-w-xl mx-auto px-4 md:px-6 py-12 flex flex-col items-center opacity-0 pointer-events-none transition-all duration-[1200ms] ease-out min-h-screen transform translate-y-8 pb-32">
+        
+        <!-- Authentic Frosted Glass Canvas -->
+        <article class="glass-panel w-full rounded-[2.5rem] px-6 md:px-10 py-12 flex flex-col items-center relative mt-2">
+            
+            <!-- Interactive Vinyl Player -->
+            <div id="vinyl-player" class="flex flex-col items-center mb-10 w-full -mt-2 transition-all duration-1000 ease-in opacity-0 cursor-pointer group active:scale-95">
+                <div class="relative w-40 h-40 rounded-full bg-black shadow-[0_16px_36px_rgba(0,0,0,0.28)] flex items-center justify-center animate-spin-slow vinyl-grooves border-[3px] border-neutral-900" id="vinyl-disc">
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none"></div>
+                    <div class="relative w-15 h-15 rounded-full overflow-hidden border border-gray-600 bg-gray-800 flex items-center justify-center shadow-inner">
+                        <img id="ui-album-art" src="" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                        <div class="absolute w-3 h-3 bg-neutral-900 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.6)] z-10"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-5">
+                    <h3 id="ui-song-name" class="font-serif text-2xl font-bold tracking-wide text-brand-text group-hover:text-brand-highlight transition-colors"></h3>
+                    <p id="ui-artist-name" class="font-sans text-[0.85rem] text-brand-subtext tracking-wider mt-0.5 uppercase font-medium"></p>
+                </div>
+            </div>
+
+            <!-- Greeting Header -->
+            <h1 id="ui-greeting" class="text-[2.25rem] font-bold leading-tight text-brand-highlight mb-10 w-full text-center"></h1>
+            
+            <!-- Letter Paragraphs (Centered with breathable spacing) -->
+            <div id="ui-paragraphs" class="flex flex-col text-[1.22rem] leading-relaxed text-brand-text font-medium w-full text-center space-y-8"></div>
+            
+            <!-- Sign-Off Section -->
+            <div class="mt-16 w-full text-center reveal-item">
+                <p id="ui-signoff-text" class="text-xl text-brand-highlight font-semibold tracking-wide"></p>
+                <p id="ui-signoff-name" class="text-[2.5rem] italic mt-2.5 text-brand-text font-serif"></p>
+            </div>
+        </article>
+
+        <!-- ============================================================== -->
+        <!-- POLAROID PHOTO CAROUSEL (Adaptive 1:1 and 9:16)               -->
+        <!-- ============================================================== -->
+        <section class="mt-16 w-full flex flex-col items-center relative z-40 reveal-item">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="text-brand-highlight text-lg">✦</span>
+                <h2 class="font-serif text-[1.85rem] font-bold text-brand-highlight tracking-wide text-center drop-shadow-sm">You from my eyes~</h2>
+                <span class="text-brand-highlight text-lg">✦</span>
+            </div>
+            
+            <!-- Polaroid Carousel Slider -->
+            <div id="ui-carousel" class="w-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth touch-pan-x py-4 px-2"></div>
+            
+            <!-- Photo Counter & Carousel Dots -->
+            <div class="flex flex-col items-center gap-2.5 mt-5">
+                <div id="carousel-dots-container" class="flex justify-center items-center gap-1.5 flex-wrap px-4"></div>
+                <div id="photo-counter" class="font-sans text-xs text-brand-subtext tracking-wider font-semibold uppercase">1 / 14</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================================== -->
+    <!-- JAVASCRIPT ENGINE                                              -->
+    <!-- ============================================================== -->
+    <script>
+        // --- 1. Populate Dynamic Letter Content ---
+        const audio = document.getElementById('bg-audio');
+        audio.src = CONFIG.musicUrl;
+        
+        document.getElementById('ui-song-name').textContent = CONFIG.songName;
+        document.getElementById('mini-song-name').textContent = CONFIG.songName;
+        document.getElementById('ui-artist-name').textContent = CONFIG.artistName;
+        document.getElementById('ui-album-art').src = CONFIG.albumArt;
+        document.getElementById('mini-album-art').src = CONFIG.albumArt;
+        document.getElementById('ui-greeting').textContent = CONFIG.greeting;
+        
+        const paraContainer = document.getElementById('ui-paragraphs');
+        const dividersAfter = [1, 3, 7];
+        const pullQuoteIndex = 4;
+
+        CONFIG.paragraphs.forEach((text, index) => {
+            const p = document.createElement('p');
+            p.textContent = text;
+            if (index === pullQuoteIndex) {
+                p.className = "reveal-item text-[1.55rem] leading-snug italic font-semibold text-brand-highlight my-8 py-7 border-y border-brand-highlight/25 relative";
+            } else {
+                p.className = "reveal-item";
+            }
+            paraContainer.appendChild(p);
+
+            if (dividersAfter.includes(index)) {
+                const divider = document.createElement('div');
+                divider.className = "reveal-item text-brand-highlight/40 text-center tracking-[0.45em] text-lg my-2";
+                divider.innerHTML = "✦ &nbsp;· &nbsp;✧ &nbsp;· &nbsp;✦";
+                paraContainer.appendChild(divider);
+            }
+        });
+        
+        document.getElementById('ui-signoff-text').textContent = CONFIG.signOffText;
+        document.getElementById('ui-signoff-name').textContent = CONFIG.signOffName;
+
+        // --- 2. Audio Control & Vinyl State Sync ---
+        const vinylDisc = document.getElementById('vinyl-disc');
+        const miniVinylDisc = document.getElementById('mini-vinyl-disc');
+        const mainVinylPlayer = document.getElementById('vinyl-player');
+        const miniVinylBtn = document.getElementById('mini-vinyl-btn');
+        
+        const toggleAudio = () => {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    vinylDisc.classList.remove('vinyl-paused');
+                    miniVinylDisc.classList.remove('vinyl-paused');
+                }).catch(err => console.log("Play toggle interrupted", err));
+            } else {
+                audio.pause();
+                vinylDisc.classList.add('vinyl-paused');
+                miniVinylDisc.classList.add('vinyl-paused');
+            }
+        };
+        mainVinylPlayer.addEventListener('click', toggleAudio);
+        miniVinylBtn.addEventListener('click', toggleAudio);
+
+        // --- 3. Robust Microphone Blowing Engine (Cross-Platform) ---
+        const btnLightCandles = document.getElementById('btn-light-candles');
+        const triggerState = document.getElementById('trigger-state');
+        const blowState = document.getElementById('blow-state');
+        const candlesContainer = document.getElementById('candles-container');
+        const blowProgressBar = document.getElementById('blow-progress');
+        const blowInstruction = document.getElementById('blow-instruction');
+        const blowSubtext = document.getElementById('blow-subtext');
+        const cakeInteractive = document.getElementById('cake-interactive');
+        const candlesBlownCounter = document.getElementById('candles-blown-count');
+        
+        let audioStream = null;
+        let audioContext = null;
+        let isUnlocked = false;
+        let currentProgress = 0;
+        const totalCandles = 19;
+        const candleElements = [];
+
+        // Generate exactly 19 candles with slight organic variation
+        for (let i = 0; i < totalCandles; i++) {
+            const candle = document.createElement('div');
+            candle.className = 'candle-body';
+            candle.style.height = (20 + (i % 3) * 3) + 'px';
+            candle.innerHTML = `
+                <div class="candle-wick"></div>
+                <div class="flame flame-icon" id="flame-${i}"></div>
+            `;
+            candlesContainer.appendChild(candle);
+            candleElements.push(candle.querySelector('.flame-icon'));
+        }
+
+        // Tap-to-blow backup on the cake (Guarantees she can never get stuck)
+        cakeInteractive.addEventListener('click', () => {
+            if (isUnlocked) return;
+            currentProgress = Math.min(100, currentProgress + 18);
+            updateCandleExtinguishState();
+            if (currentProgress >= 100) {
+                isUnlocked = true;
+                executeUnlockSequence();
+            }
+        });
+
+        btnLightCandles.addEventListener('click', async () => {
+            // Secret Audio Unlock: Immediately play muted on direct tap (Bypasses iOS & Android blocks)
+            audio.volume = 0;
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => console.log("Silent preplay handled:", e));
+            }
+            
+            try {
+                // Request mic stream with noise suppression disabled so breath turbulence isn't muted
+                const constraints = {
+                    audio: {
+                        echoCancellation: false,
+                        noiseSuppression: false,
+                        autoGainControl: false
+                    }
+                };
+                
+                try {
+                    audioStream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (constraintErr) {
+                    // Fallback for browsers that don't support custom audio constraints
+                    audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                }
+                
+                triggerState.classList.add('hidden');
+                blowState.classList.remove('hidden');
+                setTimeout(() => blowState.classList.remove('opacity-0'), 40);
+
+                // Initialize AudioContext
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // CRITICAL for Android: resume context if suspended
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.3;
+                
+                const microphone = audioContext.createMediaStreamSource(audioStream);
+                microphone.connect(analyser);
+
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                
+                const detectBlow = () => {
+                    if (isUnlocked) return;
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    
+                    // Wind/blow noises concentrate heavily in lowest frequency bins (20Hz - 500Hz)
+                    let lowFreqEnergy = 0;
+                    const lowBins = 14;
+                    for (let i = 1; i <= lowBins; i++) {
+                        lowFreqEnergy += dataArray[i];
+                    }
+                    const lowAvg = lowFreqEnergy / lowBins;
+                    
+                    // Also measure overall level
+                    let totalEnergy = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        totalEnergy += dataArray[i];
+                    }
+                    const totalAvg = totalEnergy / bufferLength;
+
+                    // Calibrated sensitivity for mobile microphones
+                    if (lowAvg > 32 || totalAvg > 28) {
+                        currentProgress += 1.8;
+                    } else {
+                        currentProgress = Math.max(0, currentProgress - 0.4);
+                    }
+                    
+                    updateCandleExtinguishState();
+
+                    if (currentProgress >= 100) {
+                        isUnlocked = true;
+                        executeUnlockSequence();
+                    } else {
+                        requestAnimationFrame(detectBlow);
+                    }
+                };
+                
+                detectBlow();
+
+            } catch (err) {
+                console.warn("Microphone access unavailable or denied:", err);
+                triggerState.classList.add('hidden');
+                blowState.classList.remove('hidden');
+                blowState.classList.remove('opacity-0');
+                blowInstruction.innerHTML = "Tap the cake to blow the candles! 🎂";
+                blowSubtext.textContent = "(Tap repeatedly to blow them all out)";
+            }
+        });
+
+        const updateCandleExtinguishState = () => {
+            currentProgress = Math.min(100, Math.max(0, currentProgress));
+            blowProgressBar.style.width = currentProgress + '%';
+            
+            // Calculate how many candles should be extinguished
+            const extinguishedCount = Math.floor((currentProgress / 100) * totalCandles);
+            candlesBlownCounter.textContent = `${extinguishedCount} / 19 blown`;
+            
+            candleElements.forEach((flame, index) => {
+                if (index < extinguishedCount) {
+                    flame.classList.add('extinguished');
+                } else {
+                    flame.classList.remove('extinguished');
+                }
+            });
+        };
+
+        const executeUnlockSequence = () => {
+            // 1. Extinguish all remaining flames & close microphone stream
+            candleElements.forEach(f => f.classList.add('extinguished'));
+            candlesBlownCounter.textContent = "19 / 19 blown! ✨";
+            blowInstruction.textContent = "Happiest Birthday Arya! ❤️";
+            
+            if (audioStream) {
+                audioStream.getTracks().forEach(track => track.stop());
+            }
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().catch(() => {});
+            }
+
+            // 2. Restart song cleanly and smoothly fade in to optimal volume
+            try {
+                audio.currentTime = 0;
+                audio.play().then(() => {
+                    let vol = 0.05;
+                    audio.volume = vol;
+                    const fadeInterval = setInterval(() => {
+                        vol += 0.05;
+                        if (vol >= 0.65) {
+                            audio.volume = 0.65;
+                            clearInterval(fadeInterval);
+                        } else {
+                            audio.volume = vol;
+                        }
+                    }, 120);
+                }).catch(err => {
+                    console.log("Audio play on unlock:", err);
+                });
+            } catch (e) {
+                console.log(e);
+            }
+
+            vinylDisc.classList.remove('vinyl-paused');
+            miniVinylDisc.classList.remove('vinyl-paused');
+
+            // 3. Smooth transition to main letter canvas
+            setTimeout(() => {
+                const lockScreen = document.getElementById('pin-screen');
+                lockScreen.style.opacity = '0';
+                lockScreen.style.pointerEvents = 'none';
+                
+                document.body.classList.remove('locked');
+                const main = document.getElementById('main-content');
+                main.style.opacity = '1';
+                main.style.pointerEvents = 'auto';
+                main.classList.remove('translate-y-8');
+                main.classList.add('translate-y-0');
+                
+                document.getElementById('scroll-progress-container').style.opacity = '1';
+
+                setTimeout(() => mainVinylPlayer.classList.remove('opacity-0'), 700);
+                setTimeout(() => lockScreen.remove(), 1000);
+            }, 750);
+        };
+
+        // --- 4. Intersection Observers for Smooth Reveal ---
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+
+        document.querySelectorAll('.reveal-item').forEach(el => revealObserver.observe(el));
+
+        // Floating mini vinyl observer
+        const playerObserver = new IntersectionObserver((entries) => {
+            const isMainVisible = entries[0].isIntersecting;
+            if (isMainVisible || document.body.classList.contains('locked')) {
+                miniVinylBtn.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                miniVinylBtn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            } else {
+                miniVinylBtn.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+                miniVinylBtn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            }
+        }, { threshold: 0.05 });
+        playerObserver.observe(mainVinylPlayer);
+
+        // Love Meter Scroll Progress
+        const progressBar = document.getElementById('scroll-progress');
+        window.addEventListener('scroll', () => {
+            if (document.body.classList.contains('locked')) return;
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (docHeight > 0) {
+                const scrollPercent = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
+                progressBar.style.width = scrollPercent + '%';
+            }
+        }, { passive: true });
+
+        // --- 5. Adaptive Polaroid Carousel (1:1 and 9:16 Support) ---
+        const carousel = document.getElementById('ui-carousel');
+        const dotsContainer = document.getElementById('carousel-dots-container');
+        const photoCounter = document.getElementById('photo-counter');
+
+        CONFIG.photos.forEach((photoObj, index) => {
+            const safeUrl = encodeURI(photoObj.src);
+            
+            // Random subtle polaroid rotation between -1.5deg and 1.5deg
+            const rotation = (index % 2 === 0 ? -1 : 1) * (0.8 + (index % 3) * 0.4);
+            
+            const cardWrapper = document.createElement('div');
+            cardWrapper.className = "shrink-0 w-[84vw] max-w-[340px] snap-always snap-center flex justify-center py-3 px-2";
+            
+            const lazyAttr = index === 0 ? '' : 'loading="lazy"';
+            
+            cardWrapper.innerHTML = `
+                <div class="polaroid-card w-full rounded-sm p-3 pb-6 flex flex-col items-center" style="transform: rotate(${rotation}deg);">
+                    <!-- Photo Container with fixed comfortable height for both 1:1 and 9:16 -->
+                    <div class="w-full h-[52vh] max-h-[380px] bg-pink-50/40 rounded-[2px] overflow-hidden flex items-center justify-center relative shadow-inner">
+                        <img src="${safeUrl}" 
+                             alt="You from my eyes~" 
+                             ${lazyAttr} 
+                             class="w-full h-full object-contain drop-shadow-sm select-none"
+                             onerror="this.parentElement.innerHTML='<div class=\\'text-xs font-sans text-brand-subtext\\'>Photo loading...</div>'">
+                    </div>
+                    <!-- Polaroid handwritten caption -->
+                    <div class="w-full text-center mt-3.5 px-2">
+                        <p class="font-hand text-xl text-brand-text/90 tracking-wide">${photoObj.caption}</p>
+                    </div>
+                </div>
+            `;
+            carousel.appendChild(cardWrapper);
+
+            // Instagram-style indicator dot
+            const dot = document.createElement('div');
+            dot.className = `dot h-1.5 w-1.5 rounded-full bg-brand-subtext/30 ${index === 0 ? 'active' : ''}`;
+            dotsContainer.appendChild(dot);
+        });
+
+        // Sync carousel scroll with dots & counter
+        const dots = dotsContainer.children;
+        carousel.addEventListener('scroll', () => {
+            const cardWidth = carousel.children[0].offsetWidth;
+            const index = Math.round(carousel.scrollLeft / cardWidth);
+            const safeIndex = Math.max(0, Math.min(CONFIG.photos.length - 1, index));
+            
+            for (let i = 0; i < dots.length; i++) {
+                if (i === safeIndex) {
+                    dots[i].classList.add('active');
+                    dots[i].classList.remove('bg-brand-subtext/30');
+                } else {
+                    dots[i].classList.remove('active');
+                    dots[i].classList.add('bg-brand-subtext/30');
+                }
+            }
+            photoCounter.textContent = `${safeIndex + 1} / ${CONFIG.photos.length}`;
+        }, { passive: true });
+
+        // --- 6. Ambient Particle System (Pure CSS GPU Animated) ---
+        const pContainer = document.getElementById('particles-container');
+        const svgHeart = (c) => `<svg viewBox="0 0 24 24" fill="${c}" class="w-full h-full"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+        const svgPetal = () => `<svg viewBox="0 0 30 30" fill="#f472b6" class="w-full h-full"><path d="M15 0 C25 8 28 20 15 30 C2 20 5 8 15 0 Z"/></svg>`;
+        const svgStar = () => `<svg viewBox="0 0 24 24" fill="#ffffff" class="w-full h-full drop-shadow-sm"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>`;
+
+        // Macro Bokeh Hearts (Z-0)
+        for (let i = 0; i < 6; i++) {
+            const el = document.createElement('div');
+            el.className = 'bokeh-item';
+            const size = Math.random() * 110 + 90;
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = (Math.random() * 100) + 'vw';
+            el.style.top = (Math.random() * 100) + 'vh';
+            el.style.filter = 'blur(16px)';
+            el.innerHTML = svgHeart('rgba(251,113,133,0.55)');
+            el.style.animation = `pulseGlow ${Math.random() * 8 + 10}s ease-in-out infinite alternate`;
+            pContainer.appendChild(el);
+        }
+
+        // Floating Hearts, Stars & Falling Petals (Z-1)
+        for (let i = 0; i < 24; i++) {
+            const el = document.createElement('div');
+            el.className = 'particle-item';
+            const rand = Math.random();
+            let size, isFalling = false;
+            
+            if (rand < 0.5) {
+                el.innerHTML = svgHeart('rgba(244, 114, 182, 0.48)');
+                size = Math.random() * 18 + 12;
+            } else if (rand < 0.8) {
+                el.innerHTML = svgPetal();
+                size = Math.random() * 13 + 8;
+                isFalling = true;
+            } else {
+                el.innerHTML = svgStar();
+                size = Math.random() * 7 + 4;
+            }
+
+            const duration = Math.random() * 18 + 14;
+            const delay = Math.random() * -25; 
+            el.style.width = size + 'px';
+            el.style.height = size + 'px';
+            el.style.left = (Math.random() * 100) + 'vw';
+            
+            if (isFalling) {
+                el.style.top = '0';
+                el.style.animation = `tumbleDown ${duration * 0.75}s linear infinite`;
+            } else {
+                el.style.bottom = '0';
+                el.style.animation = `floatUp ${duration}s linear infinite`;
+            }
+            
+            el.style.animationDelay = `${delay}s`;
+            el.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+            el.style.setProperty('--max-opacity', isFalling ? 0.85 : Math.random() * 0.5 + 0.3);
+            pContainer.appendChild(el);
+        }
+    </script>
+</body>
+</html>
